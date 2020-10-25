@@ -5,6 +5,12 @@ import socket, threading, sys, traceback, os
 #payload là phần dữ liệu thực sự được truyền đi của một gói tin giữa hai phía
 from RtpPacket import RtpPacket
 class Client:
+
+    INIT = 0
+    READY = 1
+    PLAYING = 2
+    state = INIT
+
     SETUP=0
     PLAY=1
     PAUSE=2
@@ -54,5 +60,15 @@ class Client:
         pass
 
  
-
-
+    def sendRTSPRequest(self, requestCode):
+        #setup
+        if self.SETUP==requestCode and self.state==self.INIT:
+            pass
+        # play
+        elif self.PLAY==requestCode and self.state ==self.READY:
+            pass
+        #pause
+        elif self.pause==requestCode and self.state ==self.PAUSE:
+            pass
+        elif self.teardown ==requestCode and not self.state ==self.INIT:
+            pass

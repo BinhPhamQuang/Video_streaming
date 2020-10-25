@@ -38,28 +38,32 @@ class RtpPacket:
         self.payload = payload
 
     def decode(self, byteStream):
-        self.header = bytearray(byteStream[:HEADER_SIZE]) 
+        self.header = bytearray(byteStream[:HEADER_SIZE])
         self.payload = byteStream[HEADER_SIZE:]
 
     def version(self):
-        return int(self.header[0]>>6)
+        return int(self.header[0] >> 6)
 
     def padding(self):
-        return int((self.header[0]>>5& 0x1 ))  
-    
+        return int((self.header[0] >> 5 & 0x1))
+
     def seqNum(self):
-        return int(self.header[2]<<8 | self.header[3])
+        return int(self.header[2] << 8 | self.header[3])
 
     def timestamp(self):
-        return int(self.header[4]<<24| self.header[5]<<16 | self.header[6]<<8 | self.header[7])
+        return int(self.header[4] << 24 | self.header[5] << 16 | self.header[6] << 8 | self.header[7])
 
     def payload_type(self):
-        return int(self.header[1]&127 ) #01111111
+        return int(self.header[1] & 127)  # 01111111
 
     def getPayload(self):
-		"""Return payload."""
-		return self.payload
 
-	def getPacket(self):
-		"""Return RTP packet."""
-		return self.header + self.payload
+        return self.payload
+
+    def getPacket(self):
+
+        return self.header + self.payload
+
+
+
+print(time())
