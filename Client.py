@@ -1,20 +1,28 @@
 from tkinter import *
 import tkinter.messagebox
 from PIL import Image, ImageTk
-import socket, threading, sys, traceback, os
-#payload là phần dữ liệu thực sự được truyền đi của một gói tin giữa hai phía
+import socket
+import threading
+import sys
+import traceback
+import os
+# payload là phần dữ liệu thực sự được truyền đi của một gói tin giữa hai phía
 from RtpPacket import RtpPacket
-class Client:
 
+
+class Client:
+    # state
     INIT = 0
     READY = 1
     PLAYING = 2
     state = INIT
 
-    SETUP=0
-    PLAY=1
-    PAUSE=2
-    TEARDOWN=3
+# command
+    SETUP = 0
+    PLAY = 1
+    PAUSE = 2
+    TEARDOWN = 3
+
     def __init__(self, root):
         self.root = root
         self.CreateGUI()
@@ -45,30 +53,45 @@ class Client:
         self.teardown.grid(row=1, column=3, padx=2, pady=2)
 
         self.label = Label(self.root, height=19)
-        self.label.grid(row=0, column=0, columnspan=4, sticky=W+E+N+S, padx=5, pady=5)
+        self.label.grid(row=0, column=0, columnspan=4,
+                        sticky=W+E+N+S, padx=5, pady=5)
 
     def setupMovie(self):
-        print('hi')
+        if self.state == self.INIT:
+            self.sendRTSPRequest(self.SETUP)
 
     def playMovie(self):
-        pass
+        if self.state == self.READY:
+            print("Playing Movie")
+            threading.Thread(target=self.listenRtp).start()
+            self.playEvent = threading.Event()
+            self.playEvent.clear()
+            self.sendRTSPRequest(self.PLAY)
 
     def pauseMovie(self):
-        pass
+        if self.state == self.PLAYING:
+            print("Pause movie")
+            self.sendRTSPRequest(self.PAUSE)
 
     def exitClient(self):
-        pass
+        self.sendRTSPRequest(self.TEARDOWN)
+        self.root.destroy()
+        sys.exit(0)
 
- 
     def sendRTSPRequest(self, requestCode):
-        #setup
-        if self.SETUP==requestCode and self.state==self.INIT:
+        # setup
+        if self.SETUP == requestCode and self.state == self.INIT:
             pass
         # play
-        elif self.PLAY==requestCode and self.state ==self.READY:
+        elif self.PLAY == requestCode and self.state == self.READY:
             pass
-        #pause
-        elif self.pause==requestCode and self.state ==self.PAUSE:
+        # pause
+        elif self.pause == requestCode and self.state == self.PAUSE:
             pass
-        elif self.teardown ==requestCode and not self.state ==self.INIT:
+        elif self.teardown == requestCode and not self.state == self.INIT:
             pass
+
+
+a = Tk()
+w = Client(a)
+a.mainloop()
