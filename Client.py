@@ -1,6 +1,14 @@
 from tkinter import *
-
+import tkinter.messagebox
+from PIL import Image, ImageTk
+import socket, threading, sys, traceback, os
+#payload là phần dữ liệu thực sự được truyền đi của một gói tin giữa hai phía
+from RtpPacket import RtpPacket
 class Client:
+    SETUP=0
+    PLAY=1
+    PAUSE=2
+    TEARDOWN=3
     def __init__(self, root):
         self.root = root
         self.CreateGUI()
@@ -45,13 +53,6 @@ class Client:
     def exitClient(self):
         pass
 
-
-window = Tk()
-ap= Client(window)
-
-#ap.root.geometry('650x400')
-ap.root.title("Video Streaming")
-#ap.root.mainloop()
-window.mainloop()
+ 
 
 
