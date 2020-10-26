@@ -1,5 +1,5 @@
 from tkinter import *
-import tkinter.messagebox
+import tkinter.messagebox as MessageBox
 from PIL import Image, ImageTk
 import socket
 import threading
@@ -23,9 +23,12 @@ class Client:
     PAUSE = 2
     TEARDOWN = 3
 
-    def __init__(self, root):
+    def __init__(self, root,serveraddr,serverport):
         self.root = root
+        self.serveraddr=serveraddr
+        self.serverport=serverport
         self.CreateGUI()
+        self.rtpSocket = socket.socket(socket.AF_INET,socket.SOCK_DGRAM)
 
     def CreateGUI(self):
         # Create Setup button
@@ -91,7 +94,15 @@ class Client:
         elif self.teardown == requestCode and not self.state == self.INIT:
             pass
 
+    def connectToServer(self):
+        self.rtpSocket=socket.socket(socket.AF_INET,socket.SOCK_STREAM)
+        #AF_INET ipv4
+        # sock_stream TCP
+        try:
+            self.rtpSocket.connect((self.serveraddr,self.serverport))
+        except:
+            MessageBox.showerror('Connection Failed', 'Connection to \'%s\' failed.' %self.serverAddr)
 
 a = Tk()
-w = Client(a)
+w = Client(a,1,2)
 a.mainloop()
