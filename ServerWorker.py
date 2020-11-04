@@ -126,7 +126,7 @@ class ServerWorker:
 				except:
 					print("Connection Error")
 					#print('-'*60)
-					#traceback.print_exc(file=sys.stdout)
+					traceback.print_exc(file=sys.stdout)
 					#print('-'*60)
 
 	def makeRtp(self, payload, frameNbr):

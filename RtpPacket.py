@@ -18,22 +18,23 @@ class RtpPacket:
         self.header[0] = self.header[0] | P << 5  # VVP00000
         self.header[0] = self.header[0] | X << 4  # VVPX0000
         self.header[0] = self.header[0] | CC  # VVPXCCCC
-
+        
         self.header[1] = M << 7  # M0000000
+        
         self.header[1] = self.header[1] | PT  # MPT
 
         self.header[2] = sq >> 8
         self.header[3] = sq & 0x00FF  # delete 8 first bit
 
         self.header[4] = timestamp >> 24
-        self.header[5] = (timestamp & 0x00FFFFFF) >> 16
-        self.header[6] = (timestamp & 0x0000FFFF) >> 8
-        self.header[7] = (timestamp & 0x000000FF)
+        self.header[5] = (timestamp & 0xFF) >> 16
+        self.header[6] = (timestamp & 0xFF) >> 8
+        self.header[7] = (timestamp & 0xFF)
 
         self.header[8] = SSRC >> 24
-        self.header[9] = (SSRC & 0x00FFFFFF) >> 16
-        self.header[10] = (SSRC & 0x0000FFFF) >> 8
-        self.header[11] = (SSRC & 0x000000FF)
+        self.header[9] = (SSRC & 0xFF) >> 16
+        self.header[10] = (SSRC & 0xFF) >> 8
+        self.header[11] = (SSRC & 0xFF)
 
         self.payload = payload
 
