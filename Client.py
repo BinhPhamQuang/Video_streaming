@@ -1,4 +1,4 @@
-#asd
+# asd
 from tkinter import *
 import tkinter.messagebox as MessageBox
 from PIL import Image, ImageTk
@@ -26,8 +26,8 @@ class Client:
     PAUSE = 2
     TEARDOWN = 3
 
+    counter = 0
 
-    counter=0
     def __init__(self, master, serveraddr, serverport, rtpport, filename):
         self.master = master
         self.filename = filename
@@ -40,7 +40,7 @@ class Client:
         self.CreateGUI()
         self.teardownAcked = 0
         self.connectToServer()
-        self.frameNbr=0
+        self.frameNbr = 0
         self.rtpSocket = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
 
     def CreateGUI(self):
@@ -76,20 +76,24 @@ class Client:
 
     def setupMovie(self):
         if self.state == self.INIT:
+            print("Set up...")
             self.sendRTSPRequest(self.SETUP)
 
     def playMovie(self):
         if self.state == self.READY:
             threading.Thread(target=self.listenRtp).start()
+            print("Playing movie !")
             self.playEvent = threading.Event()
             self.playEvent.clear()
             self.sendRTSPRequest(self.PLAY)
 
     def pauseMovie(self):
         if self.state == self.PLAYING:
+            print("Pause...")
             self.sendRTSPRequest(self.PAUSE)
 
     def exitClient(self):
+        print("Exit...")
         self.sendRTSPRequest(self.TEARDOWN)
         self.master.destroy()
         sys.exit(0)
@@ -173,19 +177,22 @@ class Client:
     def connectToServer(self):
         self.rtspSocket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         try:
-            self.rtspSocket.connect((self.serveraddr,self.serverPort))
+            self.rtspSocket.connect((self.serveraddr, self.serverPort))
         except:
-            MessageBox.showerror('Connection Failed', 'Connection to \'%s\' failed.' %self.serveraddr)
+            MessageBox.showerror(
+                'Connection Failed', 'Connection to \'%s\' failed.' % self.serveraddr)
         # AF_INET ipv4
         # sock_stream TCP
 
     def listenRtp(self):
+
         while True:
             try:
-                data,addr = self.rtpSocket.recvfrom(40000)
+                data, addr = self.rtpSocket.recvfrom(20000)
                 if data:
-                    rtpPacket=RtpPacket().decode(data)
-                    print ("Received Rtp Packet #" + str(rtpPacket.seqNum()) + " ")
+                    rtpPacket = RtpPacket()
+                    rtpPacket.decode(data)
+                    print("Received Rtp Packet #" +str(rtpPacket.seqNum()))
                     # try:
                     #     if self.frameNbr+1 != rtpPacket.seqNum():
                     #         self.counter+=1
@@ -194,9 +201,13 @@ class Client:
                     # except:
                     #     traceback.print_exc(file=sys.stdout)
                     currFrameNbr = rtpPacket.seqNum()
-                    if currFrameNbr >  self.frameNbr:
-                        self.frameNbr=currFrameNbr
-                        self.updateMovie(self.writeFrame(rtpPacket.getPayload()))
+                    if currFrameNbr > self.frameNbr:
+                        
+                        self.frameNbr = currFrameNbr
+                        self.FrameVideo(self.writeFrame(rtpPacket.getPayload()))
+                        print("Write new frame !")
+                else:
+                    print('----Can not recieve data !----')
             except:
                 # Stop when PAUSE or TEARDOWN
                 if self.playEvent.isSet():
@@ -207,7 +218,6 @@ class Client:
                     self.rtpSocket.close()
                     break
 
-
     def FrameVideo(self, image):
         try:
             photo = ImageTk.PhotoImage(Image.open(image))
@@ -217,6 +227,7 @@ class Client:
         self.label.image = photo
 
     def writeFrame(self, data):
+         
         cachename = "cache-" + str(self.sessionId) + ".jpg"
         try:
             file = open(cachename, "wb")

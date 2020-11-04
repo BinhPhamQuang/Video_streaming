@@ -11,7 +11,7 @@ class RtpPacket:
 # PT: payload_type,CC: contributing sources
 # M marker, sq : sequence number
 
-    def encode(self, V, P, X, CC, M, PT, sq, SSRC, payload):
+    def encode(self, V, P, X, CC,sq, M, PT, SSRC, payload):
         timestamp = int(time())
         print("timestamp: "+str(int(time())))
         self.header[0] = V << 6  # VV000000

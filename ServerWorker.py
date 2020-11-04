@@ -59,6 +59,7 @@ class ServerWorker:
 					self.clientInfo['videoStream'] = VideoStream(filename)
 					self.state = self.READY
 				except IOError:
+					print("FILE_NOT_FOUND_404")
 					self.replyRtsp(self.FILE_NOT_FOUND_404, seq[1])
 				
 				# Generate a randomized RTSP session ID
@@ -126,7 +127,7 @@ class ServerWorker:
 				except:
 					print("Connection Error")
 					#print('-'*60)
-					traceback.print_exc(file=sys.stdout)
+					#traceback.print_exc(file=sys.stdout)
 					#print('-'*60)
 
 	def makeRtp(self, payload, frameNbr):
