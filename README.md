@@ -1,18 +1,15 @@
 # Video_streaming
 ## Description
 ### Client, ClientLauncher
-The ClientLauncher starts the Client and the user interface which you use to send RTSP commands and which is used to display the video.
-In the Client class, you will need to implement the actions that are taken when the buttons are pressed. You do not need to modify the ClientLauncher module.
+The ClientLauncher starts the Client and the user interface which you use to send RTSP commands and which is used to display the video and actions that are taken when the buttons are pressed.
 ### ServerWorker, Server
-These two modules implement the server which responds to the RTSP requests and streams back the video. The RTSP interaction is already implemented and the ServerWorker 
-calls methods from the RtpPacket class to packetize the video data. You do not need to modify these modules.
+These two modules implement the server which responds to the RTSP requests and streams back the video The ServerWorker calls methods from the RtpPacket class to packetize the video data. 
 ### RtpPacket
-This class is used to handle the RTP packets. It has separate methods for handling the received packets at the client side and you do not need to modify them. The Client
+This class is used to handle the RTP packets. It has separate methods for handling the received packets at the client side. The Client
 also 
-de-packetizes (decodes) the data and you do not need to modify this method. You will need to complete the implementation of video data RTPpacketization (which is used by 
-the server).
+de-packetizes (decodes) the data.
 ### VideoStream
-This class is used to read video data from the file on disk. You do not need to modify this class.
+This class is used to read video data from the file on disk.
 ## Running the code
 After completing the code, you can run it as follows:
 
