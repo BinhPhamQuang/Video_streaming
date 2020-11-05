@@ -76,26 +76,36 @@ class Client:
 
     def setupMovie(self):
         if self.state == self.INIT:
-            print("Set up...")
+            print('+------------------------------+')
+            print("|Request sent: SET UP !        |")
+            print('+------------------------------+')
             self.sendRTSPRequest(self.SETUP)
 
     def playMovie(self):
         if self.state == self.READY:
             threading.Thread(target=self.listenRtp).start()
-            print("Playing movie !")
+            print('+------------------------------+')
+            print("|Request sent: PLAY !          |")
+            print('+------------------------------+')
             self.playEvent = threading.Event()
             self.playEvent.clear()
             self.sendRTSPRequest(self.PLAY)
 
     def pauseMovie(self):
         if self.state == self.PLAYING:
-            print("Pause...")
+            print('+------------------------------+')
+            print("|Request sent: PAUSE !         |")
+            print('+------------------------------+')
             self.sendRTSPRequest(self.PAUSE)
 
     def exitClient(self):
-        print("Exit...")
+        print('+------------------------------+')
+        print("|Request sent: TEARDOWN !      |")
+        print('+------------------------------+')
         self.sendRTSPRequest(self.TEARDOWN)
         self.master.destroy()
+         # Delete cache jpeg file
+        os.remove( "cache-" + str(self.sessionId) + ".jpg")
         sys.exit(0)
 # end event
 
