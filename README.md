@@ -1,5 +1,5 @@
 # Video_streaming
-## Description
+## 1. Description
 ### Client, ClientLauncher
 The ClientLauncher starts the Client and the user interface which you use to send RTSP commands and which is used to display the video and actions that are taken when the buttons are pressed.
 ### ServerWorker, Server
@@ -10,7 +10,7 @@ also
 de-packetizes (decodes) the data.
 ### VideoStream
 This class is used to read video data from the file on disk.
-## Running the code
+## 2. Running the code
 After completing the code, you can run it as follows:
 
 First, start the server with the command :
