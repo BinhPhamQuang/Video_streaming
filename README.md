@@ -22,6 +22,15 @@ python Server.py server_port
 ```
 Where **server_port** is the port your server listens to for incoming RTSP connections. The standard RTSP port is 554, but you will need to choose a port number greater than 1024.
 
-Then, start the client with the command python** ClientLauncher.py** server_host server_port RTP_port video_file where server_host is the name of the machine where the server is running, 
-**server_port** is the port where the server is listening on, RTP_port is the port where the RTP packets are received, and video_file is the name of the video file you want to request
-(we have provided one example file movie.Mjpeg). The file format is described in Appendix section.
+Then, start the client with the command:
+```bash
+python ClientLauncher.py server_host server_port RTP_port video_file
+```
+ where **server_host** is the name of the machine where the server is running, **server_port** is the port where the server is listening on, **RTP_port** is the port where the RTP packets are received, and **video_file** is the name of the video file you want to request (we have provided one example file movie.Mjpeg). The file format is described in Appendix section.
+ 
+ Example this command:
+ ```bash
+ python ClientLauncher.py 1025 5008 Movie.Mjpeg
+ ```
+ 
+:smiley: The easiest way for Window users. You can run **run.bat** that we provided. In that file, we set all parameters  as default for you and you can change it for yourself.
