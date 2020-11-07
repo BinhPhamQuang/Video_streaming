@@ -7,11 +7,11 @@ import threading
 import sys
 import traceback
 import os
-# payload là phần dữ liệu thực sự được truyền đi của một gói tin giữa hai phía
+
 from RtpPacket import RtpPacket
 
-
-#request: "DATATYPE"+" abc.jpeg\n"+" rtspSeq\n"+" adadds "+" port"
+# payload là phần dữ liệu thực sự được truyền đi của một gói tin giữa hai phía
+#request structure: "DATATYPE"+" abc.jpeg\n"+" rtspSeq\n"+" adadds "+" port"
 
 class Client:
     # state
@@ -26,6 +26,7 @@ class Client:
     PAUSE = 2
     TEARDOWN = 3
 
+#count packet loss
     COUNTER = 0
 
     def __init__(self, master, serveraddr, serverport, rtpport, filename):
@@ -102,13 +103,14 @@ class Client:
         print('+------------------------------+')
         print("|Request sent: TEARDOWN !      |")
         print('+------------------------------+')
-         
-        MessageBox.showinfo('',"Packet Loss Rate: "+str(float(self.COUNTER/self.frameNbr)))
+
+        MessageBox.showinfo('', "Packet Loss Rate: " +
+                            str(float(self.COUNTER/self.frameNbr)))
         self.sendRTSPRequest(self.TEARDOWN)
         self.master.destroy()
-         # Delete cache jpeg file
-        os.remove( "cache-" + str(self.sessionId) + ".jpg")
-        
+        # Delete cache jpeg file
+        os.remove("cache-" + str(self.sessionId) + ".jpg")
+
         sys.exit(0)
 # end event
 
@@ -176,6 +178,7 @@ class Client:
 
                 elif self.requestSent == self.TEARDOWN:
                     self.teardownAcked = 1
+# ----
 
     def OpenRTPport(self):
         self.rtpSocket.settimeout(0.5)
@@ -205,20 +208,17 @@ class Client:
                 if data:
                     rtpPacket = RtpPacket()
                     rtpPacket.decode(data)
-                    print("Received Rtp Packet #" +str(rtpPacket.seqNum()))
-                    try:
-                        if self.frameNbr+1 != rtpPacket.seqNum():
-                            self.counter+=1
-                            print ( "PACKET LOSS !")
-                        currFrameNbr = rtpPacket.seqNum()
-                    except:
-                        traceback.print_exc(file=sys.stdout)
+                    print("Received Rtp Packet #" + str(rtpPacket.seqNum()))
+                   
+                    if self.frameNbr+1 != rtpPacket.seqNum():
+                        self.COUNTER += 1
+                        print("PACKET LOSS !")
                     currFrameNbr = rtpPacket.seqNum()
                     if currFrameNbr > self.frameNbr:
-                        
                         self.frameNbr = currFrameNbr
-                        self.FrameVideo(self.writeFrame(rtpPacket.getPayload()))
-                        
+                        self.FrameVideo(self.writeFrame(
+                            rtpPacket.getPayload()))
+
                 else:
                     print('----Can not recieve data !----')
             except:
@@ -240,7 +240,7 @@ class Client:
         self.label.image = photo
 
     def writeFrame(self, data):
-         
+
         cachename = "cache-" + str(self.sessionId) + ".jpg"
         try:
             file = open(cachename, "wb")
@@ -252,9 +252,3 @@ class Client:
             print("file write error")
         file.close()
         return cachename
-
-
-# a = Tk()
-
-# w = Client(a, '172.17.2.221', 1025, 5008, 'video.mjpeg')
-# a.mainloop()
