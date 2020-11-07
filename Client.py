@@ -26,7 +26,7 @@ class Client:
     PAUSE = 2
     TEARDOWN = 3
 
-    counter = 0
+    COUNTER = 0
 
     def __init__(self, master, serveraddr, serverport, rtpport, filename):
         self.master = master
@@ -102,10 +102,13 @@ class Client:
         print('+------------------------------+')
         print("|Request sent: TEARDOWN !      |")
         print('+------------------------------+')
+         
+        MessageBox.showinfo('',"Packet Loss Rate: "+str(float(self.COUNTER/self.frameNbr)))
         self.sendRTSPRequest(self.TEARDOWN)
         self.master.destroy()
          # Delete cache jpeg file
         os.remove( "cache-" + str(self.sessionId) + ".jpg")
+        
         sys.exit(0)
 # end event
 
@@ -203,19 +206,19 @@ class Client:
                     rtpPacket = RtpPacket()
                     rtpPacket.decode(data)
                     print("Received Rtp Packet #" +str(rtpPacket.seqNum()))
-                    # try:
-                    #     if self.frameNbr+1 != rtpPacket.seqNum():
-                    #         self.counter+=1
-                    #         print ( "PACKET LOSS !")
-                    #     currFrameNbr = rtpPacket.seqNum()
-                    # except:
-                    #     traceback.print_exc(file=sys.stdout)
+                    try:
+                        if self.frameNbr+1 != rtpPacket.seqNum():
+                            self.counter+=1
+                            print ( "PACKET LOSS !")
+                        currFrameNbr = rtpPacket.seqNum()
+                    except:
+                        traceback.print_exc(file=sys.stdout)
                     currFrameNbr = rtpPacket.seqNum()
                     if currFrameNbr > self.frameNbr:
                         
                         self.frameNbr = currFrameNbr
                         self.FrameVideo(self.writeFrame(rtpPacket.getPayload()))
-                        print("Write new frame !")
+                        
                 else:
                     print('----Can not recieve data !----')
             except:
