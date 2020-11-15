@@ -10,8 +10,6 @@ import os
 
 from RtpPacket import RtpPacket
 
-# payload là phần dữ liệu thực sự được truyền đi của một gói tin giữa hai phía
-#request structure: "DATATYPE"+" abc.jpeg\n"+" rtspSeq\n"+" adadds "+" port"
 
 class Client:
     # state
@@ -26,7 +24,7 @@ class Client:
     PAUSE = 2
     TEARDOWN = 3
 
-#count packet loss
+    # count packet loss
     COUNTER = 0
 
     def __init__(self, master, serveraddr, serverport, rtpport, filename):
@@ -104,8 +102,6 @@ class Client:
         print("|Request sent: TEARDOWN !      |")
         print('+------------------------------+')
 
-        MessageBox.showinfo('', "Packet Loss Rate: " +
-                            str(float(self.COUNTER/self.frameNbr)))
         self.sendRTSPRequest(self.TEARDOWN)
         self.master.destroy()
         # Delete cache jpeg file
@@ -136,7 +132,7 @@ class Client:
             self.rtspSocket.send(request.encode())
             self.requestSent = self.PAUSE
 
-        elif requestCode == self.TEARDOWN:
+        elif requestCode == self.TEARDOWN and self.state != self.INIT:
             self.rtspSeq += 1
             request = "TEARDOWN "+"\n"+"Seq: " + str(self.rtspSeq)
             self.rtspSocket.send(request.encode())
@@ -156,7 +152,6 @@ class Client:
 
     def parseRtspReply(self, data):
         reply = data.decode("utf8").split('\n')
-        # reply by server: 'RTSP/1.0 200 OK\nCSeq: ' + seq + '\nSession: ' + str(self.clientInfo['session'])
         seq = int(reply[1].split(' ')[1])
         session = int(reply[2].split(' ')[1])
         if seq == self.rtspSeq:
@@ -173,7 +168,7 @@ class Client:
 
                 elif self.requestSent == self.PAUSE:
                     self.state = self.READY
-                    # The play thread exits. A new thread is created on resume.
+
                     self.playEvent.set()
 
                 elif self.requestSent == self.TEARDOWN:
@@ -209,7 +204,7 @@ class Client:
                     rtpPacket = RtpPacket()
                     rtpPacket.decode(data)
                     print("Received Rtp Packet #" + str(rtpPacket.seqNum()))
-                   
+
                     if self.frameNbr+1 != rtpPacket.seqNum():
                         self.COUNTER += 1
                         print("PACKET LOSS !")
