@@ -1,70 +1,75 @@
 import sys
 from time import time
-import VideoStream
 HEADER_SIZE = 12
 
+class RtpPacket:	
+	header = bytearray(HEADER_SIZE)
 
-class RtpPacket:
-    def __init__(self):
-        self.header = bytearray(HEADER_SIZE)
-# V:RTP version P:padding X: extension
-# PT: payload_type,CC: contributing sources
-# M marker, sq : sequence number
+	def __init__(self):
+		pass
 
-    def encode(self, V, P, X, CC,sq, M, PT, SSRC, payload):
-        timestamp = int(time())
-        print("timestamp: "+str(int(time())))
-        self.header[0] = V << 6  # VV000000
-        self.header[0] = self.header[0] | P << 5  # VVP00000
-        self.header[0] = self.header[0] | X << 4  # VVPX0000
-        self.header[0] = self.header[0] | CC  # VVPXCCCC
-        
-        self.header[1] = M << 7  # M0000000
-        
-        self.header[1] = self.header[1] | PT  # MPT
+	def encode(self, version, padding, extension, cc, seqnum, marker, pt, ssrc, payload):
+		"""Encode the RTP packet with header fields and payload."""
+		timestamp = int(time())
+		
+		#--------------
+		# TO COMPLETE
+		#--------------
+		# Fill the header bytearray with RTP header fields
 
-        self.header[2] = sq >> 8
-        self.header[3] = sq & 0x00FF  # delete 8 first bit
+		self.header[0] = version << 6
+		self.header[0] = self.header[0] | padding << 5
+		self.header[0] = self.header[0] | extension << 4
+		self.header[0] = self.header[0] | cc
 
-        self.header[4] = timestamp >> 24
-        self.header[5] = (timestamp & 0xFF) >> 16
-        self.header[6] = (timestamp & 0xFF) >> 8
-        self.header[7] = (timestamp & 0xFF)
+		self.header[1] = marker << 7
+		self.header[1] = self.header[1] | pt
 
-        self.header[8] = SSRC >> 24
-        self.header[9] = (SSRC & 0xFF) >> 16
-        self.header[10] = (SSRC & 0xFF) >> 8
-        self.header[11] = (SSRC & 0xFF)
+		self.header[2] = seqnum >> 8
+		self.header[3] = seqnum & 0xFF
 
-        self.payload = payload
+		self.header[4] = timestamp >> 24 & 0xFF
+		self.header[5] = (timestamp >> 16) & 0xFF
+		self.header[6] = (timestamp >> 8) & 0xFF
+		self.header[7] = timestamp & 0xFF
 
-    def decode(self, byteStream):
-        self.header = bytearray(byteStream[:HEADER_SIZE])
-        self.payload = byteStream[HEADER_SIZE:]
+		self.header[8] = ssrc >> 24
+		self.header[9] = (ssrc >> 16) & 0xFF
+		self.header[10] = (ssrc >> 8) & 0xFF
+		self.header[11] = ssrc & 0xFF
+		# ...
 
-    def version(self):
-        return int(self.header[0] >> 6)
+		# Get the payload from the argument
+		self.payload = payload
 
-    def padding(self):
-        return int((self.header[0] >> 5 & 0x1))
+	def decode(self, byteStream):
+		"""Decode the RTP packet."""
+		self.header = bytearray(byteStream[:HEADER_SIZE])
+		self.payload = byteStream[HEADER_SIZE:]
 
-    def seqNum(self):
-        return int(self.header[2] << 8 | self.header[3])
+	def version(self):
+		"""Return RTP version."""
+		return int(self.header[0] >> 6)
 
-    def timestamp(self):
-        return int(self.header[4] << 24 | self.header[5] << 16 | self.header[6] << 8 | self.header[7])
+	def seqNum(self):
+		"""Return sequence (frame) number."""
+		seqNum = self.header[2] << 8 | self.header[3]
+		return int(seqNum)
 
-    def payload_type(self):
-        return int(self.header[1] & 127)  # 01111111
+	def timestamp(self):
+		"""Return timestamp."""
+		timestamp = self.header[4] << 24 | self.header[5] << 16 | self.header[6] << 8 | self.header[7]
+		return int(timestamp)
 
-    def getPayload(self):
+	def payloadType(self):
+		"""Return payload type."""
+		pt = self.header[1] & 127
+		return int(pt)
 
-        return self.payload
+	def getPayload(self):
+		"""Return payload."""
+		return self.payload
 
-    def getPacket(self):
-
-        return self.header + self.payload
-
-
-
- 
+	def getPacket(self):
+		"""Return RTP packet."""
+		return self.header + self.payload 
